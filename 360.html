@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Luxury Villa Phuket • 360° View</title>
+		<meta name="description" content="Interactive 360° tour of a luxury villa in Phuket" />
+		<meta name="keywords" content="360 tour, villa, phuket, luxury property, interactive, virtual tour" />
+		<meta name="author" content="Egor Lyfar" />
+		<link rel="shortcut icon" href="favicon.ico">
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+		<script>
+			AFRAME.registerComponent('auto-start-vr', {
+				init: function () {
+					// Request device orientation permissions on mobile
+					if (AFRAME.utils.device.isMobile()) {
+						if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+							document.querySelector('body').addEventListener('click', function() {
+								DeviceOrientationEvent.requestPermission()
+									.then(function(response) {
+										if (response === 'granted') {
+											console.log('Device orientation permissions granted');
+										}
+									})
+									.catch(console.error);
+							});
+						}
+					}
+				}
+			});
+		</script>
+		<style>
+			.frame {
+				pointer-events: none;
+				z-index: 1000;
+			}
+			.frame a {
+				pointer-events: auto;
+			}
+			#aframe-scene {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				z-index: 1;
+			}
+		</style>
+	</head>
+	<body>
+		<a-scene id="aframe-scene" embedded auto-start-vr>
+			<a-sky src="img/360.JPG" rotation="0 -90 0"></a-sky>
+			<a-camera look-controls="magicWindowTrackingEnabled: true; touchEnabled: true; mouseEnabled: true" device-orientation-controls="enabled: true"></a-camera>
+		</a-scene>
+		<div class="frame">
+			<div class="frame__title-wrap">
+				<h1 class="frame__title">Luxury Villa Phuket • 360° View</h1>
+				<p class="frame__tagline">Drag to look around or use your phone's gyroscope</p>
+			</div>
+			<div class="frame__links">
+				<a href="index.html">View Inside</a>
+				<a href="outside.html">View Outside</a>
+			</div>
+			<a class="frame__github" href="https://egor.lyfar.com">Made by Egor</a>
+		</div>
+	</body>
+</html> 

@@ -152,29 +152,31 @@ export default class Sketch {
 
 
   gyro() {
-
     let that = this;
-
     this.maxTilt = 15;
-    
 
-    const rotationCoef = 0.15;
-
-    gn.init({ gravityNormalized: true }).then(function() {
+    gn.init({
+      gravityNormalized: true,
+      orientationBase: 'game',
+      frequency: 50,
+      screenAdjusted: true
+    }).then(function() {
       gn.start(function(data) {
-
+        // Use both deviceOrientation and motion data for smoother effect
         let y = data.do.gamma;
         let x = data.do.beta;
 
-        that.mouseTargetY = clamp(x,-that.maxTilt, that.maxTilt)/that.maxTilt;
-        that.mouseTargetX = -clamp(y,-that.maxTilt, that.maxTilt)/that.maxTilt;
+        // Add motion data for more responsive movement
+        let motionX = data.dm.gx * 2;
+        let motionY = data.dm.gy * 2;
 
+        // Combine orientation and motion data
+        that.mouseTargetY = clamp(x + motionX, -that.maxTilt, that.maxTilt)/that.maxTilt;
+        that.mouseTargetX = -clamp(y + motionY, -that.maxTilt, that.maxTilt)/that.maxTilt;
       });
     }).catch(function(e) {
-      console.log('not supported');
-
+      console.log('Device orientation not supported:', e);
     });
-
   }
 
   mouseMove() {
