@@ -10,26 +10,6 @@
 		<link rel="shortcut icon" href="favicon.ico">
 		<link rel="stylesheet" type="text/css" href="css/base.css" />
 		<script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-		<script>
-			AFRAME.registerComponent('auto-start-vr', {
-				init: function () {
-					// Request device orientation permissions on mobile
-					if (AFRAME.utils.device.isMobile()) {
-						if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-							document.querySelector('body').addEventListener('click', function() {
-								DeviceOrientationEvent.requestPermission()
-									.then(function(response) {
-										if (response === 'granted') {
-											console.log('Device orientation permissions granted');
-										}
-									})
-									.catch(console.error);
-							});
-						}
-					}
-				}
-			});
-		</script>
 		<style>
 			.frame {
 				pointer-events: none;
@@ -46,12 +26,73 @@
 				height: 100%;
 				z-index: 1;
 			}
+			/* Custom permission prompt styling */
+			#permission-dialog {
+				display: none;
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				background: rgba(255, 255, 255, 0.95);
+				backdrop-filter: blur(10px);
+				padding: 25px 35px;
+				border-radius: 12px;
+				box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+				z-index: 1001;
+				text-align: center;
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+				max-width: 85%;
+				width: 320px;
+			}
+			#permission-dialog h3 {
+				margin: 0 0 15px 0;
+				font-size: 18px;
+				font-weight: 500;
+				color: #333;
+			}
+			#permission-dialog p {
+				margin: 0 0 20px 0;
+				font-size: 14px;
+				color: #666;
+				line-height: 1.4;
+			}
+			#permission-dialog button {
+				background: #000;
+				color: white;
+				border: none;
+				padding: 12px 25px;
+				border-radius: 6px;
+				font-size: 14px;
+				font-weight: 500;
+				cursor: pointer;
+				transition: background 0.3s ease;
+				width: 100%;
+				margin-bottom: 10px;
+			}
+			#permission-dialog button:hover {
+				background: #333;
+			}
+			#permission-dialog button.secondary {
+				background: transparent;
+				color: #666;
+			}
+			#permission-dialog button.secondary:hover {
+				color: #333;
+			}
 		</style>
 	</head>
 	<body>
-		<a-scene id="aframe-scene" embedded auto-start-vr>
+		<!-- Custom permission dialog -->
+		<div id="permission-dialog">
+			<h3>Enable Motion Control</h3>
+			<p>For the best immersive experience, please allow access to your device's motion sensors.</p>
+			<button onclick="requestPermission()">Enable Motion Control</button>
+			<button class="secondary" onclick="hidePermissionDialog()">Continue Without Motion</button>
+		</div>
+
+		<a-scene id="aframe-scene" embedded device-orientation-permission-ui="enabled: false">
 			<a-sky src="img/360.JPG" rotation="0 -90 0"></a-sky>
-			<a-camera look-controls="magicWindowTrackingEnabled: true; touchEnabled: true; mouseEnabled: true" device-orientation-controls="enabled: true"></a-camera>
+			<a-camera look-controls="reverseMouseDrag: true"></a-camera>
 		</a-scene>
 		<div class="frame">
 			<div class="frame__title-wrap">
@@ -64,5 +105,34 @@
 			</div>
 			<a class="frame__github" href="https://egor.lyfar.com">Made by Egor</a>
 		</div>
+		<script>
+			// Handle device orientation permission
+			function showPermissionDialog() {
+				document.getElementById('permission-dialog').style.display = 'block';
+			}
+
+			function hidePermissionDialog() {
+				document.getElementById('permission-dialog').style.display = 'none';
+			}
+
+			function requestPermission() {
+				if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+					DeviceOrientationEvent.requestPermission()
+						.then(response => {
+							if (response === 'granted') {
+								hidePermissionDialog();
+							}
+						})
+						.catch(console.error);
+				}
+				hidePermissionDialog();
+			}
+
+			// Check if we need to request permission
+			if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+				// Show custom dialog on iOS
+				showPermissionDialog();
+			}
+		</script>
 	</body>
 </html> 

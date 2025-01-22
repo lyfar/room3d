@@ -154,6 +154,14 @@ export default class Sketch {
   gyro() {
     let that = this;
     this.maxTilt = 15;
+    const horizontalScale = 0.08;
+    const verticalScale = 0.12;
+
+    // Add easing function for edges with more aggressive curve
+    const easeMovement = (value) => {
+      // Much more aggressive curve (power of 3)
+      return Math.sign(value) * Math.pow(Math.abs(value), 3);
+    };
 
     gn.init({
       gravityNormalized: true,
@@ -162,17 +170,19 @@ export default class Sketch {
       screenAdjusted: true
     }).then(function() {
       gn.start(function(data) {
-        // Use both deviceOrientation and motion data for smoother effect
         let y = data.do.gamma;
         let x = data.do.beta;
 
-        // Add motion data for more responsive movement
-        let motionX = data.dm.gx * 2;
-        let motionY = data.dm.gy * 2;
+        // Scale down motion data even more
+        let motionX = data.dm.gx * 0.2;
+        let motionY = data.dm.gy * 0.2;
 
-        // Combine orientation and motion data
-        that.mouseTargetY = clamp(x + motionX, -that.maxTilt, that.maxTilt)/that.maxTilt;
-        that.mouseTargetX = -clamp(y + motionY, -that.maxTilt, that.maxTilt)/that.maxTilt;
+        // Apply easing and separate scaling for horizontal and vertical
+        let normalizedY = clamp(x + motionX, -that.maxTilt, that.maxTilt)/that.maxTilt;
+        let normalizedX = -clamp(y + motionY, -that.maxTilt, that.maxTilt)/that.maxTilt;
+
+        that.mouseTargetY = easeMovement(normalizedY) * verticalScale;
+        that.mouseTargetX = easeMovement(normalizedX) * horizontalScale;
       });
     }).catch(function(e) {
       console.log('Device orientation not supported:', e);
@@ -180,33 +190,46 @@ export default class Sketch {
   }
 
   mouseMove() {
-  	let that = this;
-  	document.addEventListener('mousemove', function(e) {
+    let that = this;
+    const horizontalScale = 0.08;
+    const verticalScale = 0.12;
+    
+    // Add easing function for edges with more aggressive curve
+    const easeMovement = (value) => {
+      // Much more aggressive curve (power of 3)
+      return Math.sign(value) * Math.pow(Math.abs(value), 3);
+    };
+    
+    document.addEventListener('mousemove', function(e) {
       let halfX = that.windowWidth/2;
       let halfY = that.windowHeight/2;
 
-  		that.mouseTargetX = (halfX - e.clientX)/halfX;
-  		that.mouseTargetY = (halfY - e.clientY)/halfY;
-
+      // Get raw values between -1 and 1
+      let rawX = (halfX - e.clientX)/halfX;
+      let rawY = (halfY - e.clientY)/halfY;
       
-  	});
+      // Apply easing curve and scaling
+      that.mouseTargetX = easeMovement(rawX) * horizontalScale;
+      that.mouseTargetY = easeMovement(rawY) * verticalScale;
+    });
   }
 
 
   render() {
     let now = new Date().getTime();
-    let currentTime = ( now - this.startTime ) / 1000;
-    this.uTime.set( currentTime );
-    // inertia
-    this.mouseX += (this.mouseTargetX - this.mouseX)*0.05;
-    this.mouseY += (this.mouseTargetY - this.mouseY)*0.05;
+    let currentTime = (now - this.startTime) / 1000;
+    this.uTime.set(currentTime);
+    
+    // Even slower inertia for smoother movement
+    const inertia = 0.02;
+    this.mouseX += (this.mouseTargetX - this.mouseX) * inertia;
+    this.mouseY += (this.mouseTargetY - this.mouseY) * inertia;
 
-
-    this.uMouse.set( this.mouseX, this.mouseY );
+    this.uMouse.set(this.mouseX, this.mouseY);
 
     // render
-    this.billboard.render( this.gl );
-    requestAnimationFrame( this.render.bind(this) );
+    this.billboard.render(this.gl);
+    requestAnimationFrame(this.render.bind(this));
   }
 }
 
