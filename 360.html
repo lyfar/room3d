@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,13 +11,6 @@
 		<link rel="stylesheet" type="text/css" href="css/base.css" />
 		<script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
 		<style>
-			.frame {
-				pointer-events: none;
-				z-index: 1000;
-			}
-			.frame a {
-				pointer-events: auto;
-			}
 			#aframe-scene {
 				position: fixed;
 				top: 0;
@@ -81,7 +74,7 @@
 			}
 		</style>
 	</head>
-	<body>
+	<body class="demo-3">
 		<!-- Custom permission dialog -->
 		<div id="permission-dialog">
 			<h3>Enable Motion Control</h3>
@@ -94,17 +87,21 @@
 			<a-sky src="img/360.JPG" rotation="0 -90 0"></a-sky>
 			<a-camera look-controls="reverseMouseDrag: true"></a-camera>
 		</a-scene>
+
 		<div class="frame">
-			<div class="frame__title-wrap">
-				<h1 class="frame__title">Luxury Villa Phuket • 360° View</h1>
-				<p class="frame__tagline">Drag to look around or use your phone's gyroscope</p>
-			</div>
-			<div class="frame__links">
-				<a href="index.html">View Inside</a>
-				<a href="outside.html">View Outside</a>
+			<div class="frame__top">
+				<div class="frame__title-wrap">
+					<h1 class="frame__title">Luxury Villa Phuket • 360° View</h1>
+					<p class="frame__tagline">Drag to look around or use your phone's gyroscope</p>
+				</div>
+				<div class="frame__links">
+					<a href="index.html">View Inside</a>
+					<a href="outside.html">View Outside</a>
+				</div>
 			</div>
 			<a class="frame__github" href="https://egor.lyfar.com">Made by Egor</a>
 		</div>
+
 		<script>
 			// Handle device orientation permission
 			function showPermissionDialog() {

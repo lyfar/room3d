@@ -154,8 +154,8 @@ export default class Sketch {
   gyro() {
     let that = this;
     this.maxTilt = 15;
-    const horizontalScale = 0.08;
-    const verticalScale = 0.12;
+    const horizontalScale = 0.03;
+    const verticalScale = 0.04;
 
     // Add easing function for edges with more aggressive curve
     const easeMovement = (value) => {
@@ -174,8 +174,8 @@ export default class Sketch {
         let x = data.do.beta;
 
         // Scale down motion data even more
-        let motionX = data.dm.gx * 0.2;
-        let motionY = data.dm.gy * 0.2;
+        let motionX = data.dm.gx * 0.1;
+        let motionY = data.dm.gy * 0.1;
 
         // Apply easing and separate scaling for horizontal and vertical
         let normalizedY = clamp(x + motionX, -that.maxTilt, that.maxTilt)/that.maxTilt;
@@ -191,8 +191,8 @@ export default class Sketch {
 
   mouseMove() {
     let that = this;
-    const horizontalScale = 0.08;
-    const verticalScale = 0.12;
+    const horizontalScale = 0.03;
+    const verticalScale = 0.04;
     
     // Add easing function for edges with more aggressive curve
     const easeMovement = (value) => {
@@ -221,7 +221,7 @@ export default class Sketch {
     this.uTime.set(currentTime);
     
     // Even slower inertia for smoother movement
-    const inertia = 0.02;
+    const inertia = 0.01;
     this.mouseX += (this.mouseTargetX - this.mouseX) * inertia;
     this.mouseY += (this.mouseTargetY - this.mouseY) * inertia;
 

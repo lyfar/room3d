@@ -12,11 +12,11 @@ article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,su
 body {
 	--color-text: #fff;
 	--color-bg: #0e0e0f;
-	--color-link: #826437;
+	--color-link: #fbc966;
 	--color-link-hover: #fff;
 	color: var(--color-text);
 	background-color: var(--color-bg);
-	font-family: moderno-fb, "Big Caslon", "Book Antiqua", "Palatino Linotype", Georgia, serif;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	overscroll-behavior: none;
@@ -41,6 +41,7 @@ body {
 	left: 0;
 	top: 0;
 	position: absolute;
+	z-index: 1;
 }
 
 canvas {
@@ -95,153 +96,151 @@ a:focus {
 }
 
 .message {
-	background: var(--color-text);
-	color: var(--color-bg);
-	padding: 1rem;
+	background: rgba(0, 0, 0, 0.8);
+	color: var(--color-text);
+	padding: 0.8rem;
 	position: fixed;
 	top: 0;
 	width: 100%;
 	z-index: 10000;
 	text-align: center;
+	font-size: 0.9rem;
 }
 
 .frame {
-	padding: 3rem 5vw;
-	text-align: center;
-	position: relative;
+	padding: 1rem;
+	text-align: left;
+	position: fixed;
 	z-index: 1000;
-	height: 100vh;
+	width: 100%;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	justify-content: center;
+	align-items: flex-start;
+	justify-content: space-between;
+	pointer-events: none;
 }
 
 .frame > * {
-	position: relative;
+	pointer-events: auto;
+}
+
+.frame__top {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.frame__title-wrap {
+	background: rgba(0, 0, 0, 0.7);
+	padding: 0.8rem 1rem;
+	border-radius: 4px;
+	max-width: 300px;
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
 }
 
 .frame__title {
-	font-size: 1.25rem;
+	font-size: 1rem;
 	margin: 0;
-	font-weight: normal;
+	font-weight: 500;
+	letter-spacing: 0.5px;
 }
 
 .frame__tagline {
-	display: none;
-	margin: 0.5rem 0 2rem;
+	display: block;
+	margin: 0.25rem 0 0;
+	font-size: 0.8rem;
+	opacity: 0.8;
 }
 
 .frame__links {
-	margin: 1rem 0;
+	background: rgba(0, 0, 0, 0.7);
+	padding: 0.8rem 1rem;
+	border-radius: 4px;
+	margin: 0;
+	display: flex;
+	gap: 1rem;
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	flex-shrink: 0;
 }
 
-.frame a {
-	text-transform: lowercase;
+.frame__links a {
+	color: var(--color-link);
+	text-decoration: none;
+	font-size: 0.9rem;
+	font-weight: 500;
+	white-space: nowrap;
 }
 
-.frame__links a:not(:last-child),
-.frame__demos a:not(:last-child) {
-	margin-right: 1rem;
+.frame__links a:hover {
+	color: var(--color-link-hover);
 }
 
-.frame__demos {
-	margin: 1rem 0;
-}
-
-.frame__demo--current,
-.frame__demo--current:hover {
-	color: var(--color-text);
+.frame__github {
+	position: fixed;
+	bottom: 1rem;
+	right: 1rem;
+	color: var(--color-link);
+	text-decoration: none;
+	background: rgba(0, 0, 0, 0.7);
+	padding: 0.5rem 1rem;
+	border-radius: 4px;
+	font-size: 0.9rem;
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
 }
 
 .frame__content {
-	line-height: 0.8;
-	pointer-events: none;
-	margin-top: 13vh;
-	font-size: 40vw;
-	font-family: essonnes-display, serif;
-	mix-blend-mode: soft-light;
-	font-weight: normal;
-	text-align: center;
-	color: #c2ba8b;
+	display: none;
 }
 
-.demo-2 .frame__content {
-	font-size: 9vw;
-	text-transform: uppercase;
-	font-weight: bold;
-	mix-blend-mode: soft-light;
-	text-align: left;
-	color: #fff;
-	font-family: Futura, "futura-pt", Arial, sans-serif;
-}
+@media screen and (max-width: 600px) {
+	.frame__top {
+		flex-direction: column;
+		align-items: stretch;
+	}
 
-.demo-3 .frame__content {
-	color: #24211d;
-}
-
-.demo-4 .frame__content {
-	color: #75c298;
-	mix-blend-mode: overlay;
+	.frame__title-wrap {
+		max-width: none;
+	}
 }
 
 @media screen and (min-width: 53em) {
 	.message {
 		display: none;
 	}
+	
 	.frame {
-		position: fixed;
-		text-align: left;
-		z-index: 10000;
-		top: 0;
-		left: 0;
-		display: grid;
-		align-content: space-between;
-		width: 100%;
-		max-width: none;
-		height: 100vh;
-		padding: 2rem 3rem;
-		pointer-events: none;
-		grid-template-columns: 75% 25%;
-		grid-template-rows: auto auto auto;
-		grid-template-areas: 'title links'
-							'content content'
-							'github demos';
+		padding: 1.5rem;
 	}
+	
 	.frame__title-wrap {
-		grid-area: title;
-		display: flex;
+		max-width: 400px;
 	}
+	
 	.frame__title {
-		font-size: 1rem;
-		margin: 0;
+		font-size: 1.2rem;
 	}
+	
 	.frame__tagline {
-		margin: 0 0 0 1rem;
-		padding: 0 0 0 1rem;
-		opacity: 0.6;
-		display: block;
+		font-size: 0.9rem;
 	}
-	.frame__github {
-		grid-area: github;
-		justify-self: start;
-		margin: 0;
-	}
-	.frame__demos {
-		margin: 0;
-		grid-area: demos;
-		justify-self: end;
-	}
+	
 	.frame__links {
-		grid-area: links;
-		padding: 0;
-		justify-self: end;
+		gap: 1.5rem;
 	}
-	.frame__content {
-		grid-area: content;
-		margin: 0;
+	
+	.frame__links a {
+		font-size: 1rem;
 	}
-	.frame a {
-		pointer-events: auto;
+	
+	.frame__github {
+		font-size: 1rem;
+		bottom: 1.5rem;
+		right: 1.5rem;
 	}
 }

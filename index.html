@@ -14,24 +14,25 @@
 	<body class="demo-3">
 		<main>
 			<div class="message">Tilt your phone to see the effect.</div>
+			<div 
+				id="gl" 
+				data-imageOriginal="img/inside.jpg" 
+				data-imageDepth="img/inside-map.jpg" 
+				data-horizontalThreshold="15" 
+				data-verticalThreshold="25">
+			</div>
 			<div class="frame">
-				<div 
-					id="gl" 
-					data-imageOriginal="img/inside.jpg" 
-					data-imageDepth="img/inside-map.jpg" 
-					data-horizontalThreshold="15" 
-					data-verticalThreshold="25">
-				</div>
-				<div class="frame__title-wrap">
-					<h1 class="frame__title">Luxury Villa Phuket • Inside View</h1>
-					<p class="frame__tagline">Move your mouse around.</a></p>
-				</div>
-				<div class="frame__links">
-					<a href="outside.html">View Outside</a>
-					<a href="360.html">View 360°</a>
+				<div class="frame__top">
+					<div class="frame__title-wrap">
+						<h1 class="frame__title">Luxury Villa Phuket • Inside View</h1>
+						<p class="frame__tagline">Move your mouse around</p>
+					</div>
+					<div class="frame__links">
+						<a href="outside.html">View Outside</a>
+						<a href="360.html">View 360°</a>
+					</div>
 				</div>
 				<a class="frame__github" href="https://egor.lyfar.com">Made by Egor</a>
-				<div class="frame__content">A</div>
 			</div>
 		</main>
 		<script src="js/app.js"></script>
