@@ -153,15 +153,10 @@ export default class Sketch {
 
   gyro() {
     let that = this;
-    this.maxTilt = 15;
-    const horizontalScale = 0.03;
-    const verticalScale = 0.04;
-
-    // Add easing function for edges with more aggressive curve
-    const easeMovement = (value) => {
-      // Much more aggressive curve (power of 3)
-      return Math.sign(value) * Math.pow(Math.abs(value), 3);
-    };
+    this.maxTilt = 5; // Reduce max tilt angle
+    // Significantly reduce movement scale
+    const horizontalScale = 0.0005;
+    const verticalScale = 0.0005;
 
     gn.init({
       gravityNormalized: true,
@@ -173,16 +168,17 @@ export default class Sketch {
         let y = data.do.gamma;
         let x = data.do.beta;
 
-        // Scale down motion data even more
-        let motionX = data.dm.gx * 0.1;
-        let motionY = data.dm.gy * 0.1;
+        // Scale down motion data significantly
+        let motionX = data.dm.gx * 0.05;
+        let motionY = data.dm.gy * 0.05;
 
-        // Apply easing and separate scaling for horizontal and vertical
+        // Apply clamping and scaling
+        const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
         let normalizedY = clamp(x + motionX, -that.maxTilt, that.maxTilt)/that.maxTilt;
         let normalizedX = -clamp(y + motionY, -that.maxTilt, that.maxTilt)/that.maxTilt;
 
-        that.mouseTargetY = easeMovement(normalizedY) * verticalScale;
-        that.mouseTargetX = easeMovement(normalizedX) * horizontalScale;
+        that.mouseTargetY = normalizedY * verticalScale;
+        that.mouseTargetX = normalizedX * horizontalScale;
       });
     }).catch(function(e) {
       console.log('Device orientation not supported:', e);
@@ -191,26 +187,21 @@ export default class Sketch {
 
   mouseMove() {
     let that = this;
-    const horizontalScale = 0.03;
-    const verticalScale = 0.04;
-    
-    // Add easing function for edges with more aggressive curve
-    const easeMovement = (value) => {
-      // Much more aggressive curve (power of 3)
-      return Math.sign(value) * Math.pow(Math.abs(value), 3);
-    };
+    // Significantly reduce movement scale
+    const horizontalScale = 0.0005;
+    const verticalScale = 0.0005;
     
     document.addEventListener('mousemove', function(e) {
       let halfX = that.windowWidth/2;
       let halfY = that.windowHeight/2;
 
-      // Get raw values between -1 and 1
-      let rawX = (halfX - e.clientX)/halfX;
-      let rawY = (halfY - e.clientY)/halfY;
+      // Get raw values between -1 and 1 and clamp them
+      const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+      let rawX = clamp((halfX - e.clientX)/halfX, -0.2, 0.2);
+      let rawY = clamp((halfY - e.clientY)/halfY, -0.2, 0.2);
       
-      // Apply easing curve and scaling
-      that.mouseTargetX = easeMovement(rawX) * horizontalScale;
-      that.mouseTargetY = easeMovement(rawY) * verticalScale;
+      that.mouseTargetX = rawX * horizontalScale;
+      that.mouseTargetY = rawY * verticalScale;
     });
   }
 
@@ -220,8 +211,8 @@ export default class Sketch {
     let currentTime = (now - this.startTime) / 1000;
     this.uTime.set(currentTime);
     
-    // Even slower inertia for smoother movement
-    const inertia = 0.01;
+    // Very slow inertia for minimal movement
+    const inertia = 0.02;
     this.mouseX += (this.mouseTargetX - this.mouseX) * inertia;
     this.mouseY += (this.mouseTargetY - this.mouseY) * inertia;
 

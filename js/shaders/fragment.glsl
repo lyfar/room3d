@@ -22,6 +22,6 @@ void main() {
   vec2 vUv = (uv - vec2(0.5))*resolution.zw + vec2(0.5);
   vUv.y = 1. - vUv.y;
   vec4 tex1 = texture2D(image1,mirrored(vUv));
-  vec2 fake3d = vec2(vUv.x + (tex1.r - 0.5)*mouse.x/threshold.x, vUv.y + (tex1.r - 0.5)*mouse.y/threshold.y);
+  vec2 fake3d = vec2(vUv.x + (tex1.r - 0.5)*mouse.x*0.02/threshold.x, vUv.y + (tex1.r - 0.5)*mouse.y*0.02/threshold.y);
   gl_FragColor = texture2D(image0,mirrored(fake3d));
 }

@@ -18,8 +18,8 @@
 				id="gl" 
 				data-imageOriginal="img/inside.jpg" 
 				data-imageDepth="img/inside-map.jpg" 
-				data-horizontalThreshold="15" 
-				data-verticalThreshold="25">
+				data-horizontalThreshold="8" 
+				data-verticalThreshold="12">
 			</div>
 			<div class="frame">
 				<div class="frame__top">
@@ -35,6 +35,91 @@
 				<a class="frame__github" href="https://egor.lyfar.com">Made by Egor</a>
 			</div>
 		</main>
+		<script>
+			// Override the fragment shader before app.js loads
+			const fragmentShader = `
+				#ifdef GL_ES
+					precision mediump float;
+				#endif
+
+				uniform vec4 resolution;
+				uniform vec2 mouse;
+				uniform vec2 threshold;
+				uniform float time;
+				uniform float pixelRatio;
+				uniform sampler2D image0;
+				uniform sampler2D image1;
+
+				vec2 mirrored(vec2 v) {
+					vec2 m = mod(v,2.);
+					return mix(m,2.0 - m, step(1.0 ,m));
+				}
+
+				void main() {
+					vec2 uv = pixelRatio*gl_FragCoord.xy / resolution.xy;
+					vec2 vUv = (uv - vec2(0.5))*resolution.zw + vec2(0.5);
+					vUv.y = 1. - vUv.y;
+					vec4 tex1 = texture2D(image1,mirrored(vUv));
+					
+					// Extremely limited movement range
+					float moveScale = 0.003; // Very small base movement
+					float maxOffset = 0.05; // Maximum pixel offset
+					
+					// Clamp mouse values to create a "dead zone" in the center
+					vec2 clampedMouse = clamp(mouse, vec2(-0.05), vec2(0.05));
+					
+					vec2 fake3d = vec2(
+						vUv.x + clamp((tex1.r - 0.5) * clampedMouse.x * moveScale / threshold.x, -maxOffset, maxOffset),
+						vUv.y + clamp((tex1.r - 0.5) * clampedMouse.y * moveScale / threshold.y, -maxOffset, maxOffset)
+					);
+					gl_FragColor = texture2D(image0,mirrored(fake3d));
+				}
+			`;
+
+			// Override the default shader
+			window.__fragmentShader = fragmentShader;
+		</script>
+		<script>
+			// Intercept and modify mouse events before they reach the app
+			const originalAddEventListener = document.addEventListener;
+			document.addEventListener = function(type, listener, options) {
+				if (type === 'mousemove') {
+					const wrappedListener = function(e) {
+						// Get center of screen
+						const centerX = window.innerWidth/2;
+						const centerY = window.innerHeight/2;
+						
+						// Calculate distance from center
+						const dx = e.clientX - centerX;
+						const dy = e.clientY - centerY;
+						
+						// Create a "dead zone" in the center and limit maximum movement
+						const maxDistance = Math.min(centerX, centerY) * 0.5; // 50% of smaller screen dimension
+						const distance = Math.sqrt(dx*dx + dy*dy);
+						
+						if (distance > maxDistance) {
+							// Scale down the movement
+							const scale = maxDistance / distance;
+							e.clientX = centerX + dx * scale;
+							e.clientY = centerY + dy * scale;
+						}
+						
+						// Call original listener with modified event
+						listener.call(this, e);
+					};
+					originalAddEventListener.call(this, type, wrappedListener, options);
+				} else {
+					originalAddEventListener.call(this, type, listener, options);
+				}
+			};
+		</script>
 		<script src="js/app.js"></script>
+		<script src="js/mouse-control.js"></script>
+		<script>
+			// Initialize custom mouse control after app loads
+			setTimeout(() => {
+				const mouseControl = new MouseControl();
+			}, 100);
+		</script>
 	</body>
 </html> 
